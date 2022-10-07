@@ -13,14 +13,15 @@ using namespace std;
  * You can show on screen your solution running the python script "show.py" in the build folder.
  */
 
-int main()
-{
-    vector<string> actions = {"up", "down", "left", "right",
-                       "up", "down", "left", "right",
-                       "up", "down", "left", "right",
-                       "up", "down", "left", "right",
-                       "up", "down", "left", "right",
-                       "up", "down", "left", "right"};
+int main() {
+    vector<string> actions = {
+        "up", "down", "left", "right",
+        "up", "down", "left", "right",
+        "up", "down", "left", "right",
+        "up", "down", "left", "right",
+        "up", "down", "left", "right",
+        "up", "down", "left", "right"
+    };
 
 
 

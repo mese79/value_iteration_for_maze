@@ -1,4 +1,7 @@
-import pygame, sys, time, random
+import sys
+import time
+import random
+import pygame
 from pygame.locals import *
 from grid_world import Grid_World
 import csv
@@ -21,7 +24,7 @@ pitfalls_states = [[0, 3], [1, 1], [3, 2], [4, 2]]
 
 
 # Set window size and title, and frame delay
-surfaceSize = (100*(x_lims[1]+1), 100*(y_lims[1]+1))
+surfaceSize = (100 * (x_lims[1] + 1), 100 * (y_lims[1] + 1))
 windowTitle = 'Grid_World'
 pauseTime = 1  # smaller is faster game
 
@@ -50,8 +53,3 @@ while True:
 
     # Set the frame speed by pausing between frames
     time.sleep(pauseTime)
-#
-
-
-
-

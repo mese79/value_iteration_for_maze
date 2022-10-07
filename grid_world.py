@@ -1,13 +1,21 @@
-import pygame, sys, time, random, math
+import sys
+import time
+import random
+import math
+import pygame
 from pygame.locals import *
 import numpy as np
-action_dict = {'0': "Up",
-               '1': "Down",
-               '2': "Right",
-               '3': "Left",
-               }
-# User-defined classes
 
+
+action_dict = {
+    '0': "Up",
+    '1': "Down",
+    '2': "Right",
+    '3': "Left",
+}
+
+
+# User-defined classes
 class Tile:
     # An object in this class represents a single Tile that
     # has an image
@@ -18,7 +26,7 @@ class Tile:
     borderColor = pygame.Color('black')
     borderWidth = 4  # the pixel width of the tile border
 
-    def __init__(self, x, y, wall, surface, tile_size = (100,100)):
+    def __init__(self, x, y, wall, surface, tile_size=(100, 100)):
         # Initialize a tile to contain an image
         # - x is the int x coord of the upper left corner
         # - y is the int y coord of the upper left corner
@@ -28,7 +36,7 @@ class Tile:
 
         self.wall = wall
         self.origin = (x, y)
-        self.tile_coord = [x//100, y//100]
+        self.tile_coord = [x // 100, y // 100]
         self.surface = surface
         self.tile_size = tile_size
 
@@ -44,7 +52,7 @@ class Tile:
 
 
 
-    def draw(self, pos, color = 'white', arrow_direction = 'none'):
+    def draw(self, pos, color='white', arrow_direction='none'):
 
         # Draw the tile.
         rectangle = pygame.Rect((self.origin[0],  self.origin[1]), self.tile_size)
@@ -58,19 +66,19 @@ class Tile:
         if arrow_direction == 'none':
             return
 
-        x = self.origin[0] + self.tile_size[0]/2.0
-        y = self.origin[1]+ self.tile_size[1]/2.0
+        x = self.origin[0] + self.tile_size[0] / 2.0
+        y = self.origin[1] + self.tile_size[1] / 2.0
         start = [x, y]
         # draw arrow
 
-        if arrow_direction == 'right':
-            end = [x + self.tile_size[0]/4, y]
-        elif arrow_direction == 'left':
-            end = [x - self.tile_size[0]/4, y]
-        elif arrow_direction == 'up':
-            end = [x, y - self.tile_size[0]/4]
-        elif arrow_direction == 'down':
-            end = [x, y + self.tile_size[0]/4]
+        if arrow_direction.lower() == 'right':
+            end = [x + self.tile_size[0] / 4, y]
+        elif arrow_direction.lower() == 'left':
+            end = [x - self.tile_size[0] / 4, y]
+        elif arrow_direction.lower() == 'up':
+            end = [x, y - self.tile_size[0] / 4]
+        elif arrow_direction.lower() == 'down':
+            end = [x, y + self.tile_size[0] / 4]
         else:
             end = start
         trirad = 7
@@ -91,7 +99,10 @@ class Grid_World():
     # An object in this class represents a Grid_World game.
     tile_width = 100
     tile_height = 100
-    def __init__(self, surface, board_size = (6,4), wall_coords=[], start_coord=[], goal_coords=[], pitfalls_coords=[], actions={}):
+
+    def __init__(
+        self, surface, board_size=(6, 4), wall_coords=[], start_coord=[], goal_coords=[], pitfalls_coords=[], actions={}
+    ):
         # Intialize a Grid_World game.
         # - surface is the pygame.Surface of the window
 
@@ -105,7 +116,7 @@ class Grid_World():
         i = 0
         for y in range(board_size[1]):
             for x in range(board_size[0]):
-                self.actions[tuple([x,y])]=actions[i]
+                self.actions[tuple([x, y])] = actions[i]
                 i = i + 1
 
 
@@ -113,7 +124,7 @@ class Grid_World():
 
 
         if not wall_coords:
-            self.wall_coords = [[2,i] for i in range(board_size[1]-1)]
+            self.wall_coords = [[2, i] for i in range(board_size[1] - 1)]
         else:
             self.wall_coords = wall_coords
 
@@ -130,8 +141,8 @@ class Grid_World():
 
     def find_board_coords(self, pos):
         x = pos[1]
-        y = self.board_size[0] - pos[0] -1
-        return [x,y]
+        y = self.board_size[0] - pos[0] - 1
+        return [x, y]
 
     def createTiles(self):
         # Create the Tiles
@@ -142,7 +153,7 @@ class Grid_World():
             for rowIndex in (range(0, self.board_size[1])):
                 x = columnIndex * Grid_World.tile_width
                 y = rowIndex * Grid_World.tile_height
-                if [rowIndex,columnIndex] in self.board_wall_coords:
+                if [rowIndex, columnIndex] in self.board_wall_coords:
                     wall = True
                 else:
                     wall = False
@@ -159,7 +170,7 @@ class Grid_World():
         for row in self.board:
             for tile in row:
                 transformed_coords = tile.tile_coord
-                transformed_coords[1] = (self.board_size[1] -1) - transformed_coords[1]  # pygame considers the (0, 0) the upper left corner
+                transformed_coords[1] = (self.board_size[1] - 1) - transformed_coords[1]  # pygame considers the (0, 0) the upper left corner
                 if transformed_coords in self.pitfalls_coords:
                     tile.draw(transformed_coords, 'red')
                 elif transformed_coords in self.goal_coords:
