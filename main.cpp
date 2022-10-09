@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "value_iteration.h"
+
 using namespace std;
 
 /*
@@ -14,6 +16,16 @@ using namespace std;
  */
 
 int main() {
+    int rows = 6;
+    int cols = 4;
+    int goals[1][2] = { {2, 2} };
+    int pitfalls[4][2] = {
+        {0, 3}, {1, 1}, {3, 2}, {4, 2}
+    };
+    float action_prob = 0.8;
+    GridValueIteration maze = GridValueIteration(rows, cols, action_prob, goals, pitfalls);
+
+
     vector<string> actions = {
         "up", "down", "left", "right",
         "up", "down", "left", "right",
@@ -30,7 +42,7 @@ int main() {
     std::ofstream output_file("./actions.txt");
     std::ostream_iterator<std::string> output_iterator(output_file, "\n");
     std::copy(actions.begin(), actions.end(), output_iterator);
-    cout << "Result wrote on file actions.txt" << endl;
+    std::cout << "Result wrote on file actions.txt" << endl;
 
     return 0;
 }
