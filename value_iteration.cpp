@@ -5,6 +5,7 @@
 #include <string>
 
 #include "value_iteration.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -23,9 +24,10 @@ void GridValueIteration::run_value_iteration(float maxErr = 0.00001, int maxIter
     float errCoeff = (1 - gamma) / gamma;
     int curr_it = 1;
 
-    cout << "\nbeginning Value Iteration:\n";
+    m_printLog ? cout << "\nbeginning Value Iteration:\n" : cout;
+    
     while (curr_it < maxIterations + 1) {
-        cout << "\n  itertion #" << curr_it << ":\n";
+        m_printLog ? cout << "\n\n  itertion #" << curr_it << ":\n" : cout;
         delta = 0;
         // updating each state
         for (GridState &state: m_allStates) {
@@ -60,6 +62,11 @@ void GridValueIteration::run_value_iteration(float maxErr = 0.00001, int maxIter
 
         // replace current utilities with the updated ones:
         currUtilities = updatingUtilities;
+
+        if (m_printLog) {
+            print_2d_array(currUtilities);
+            print_2d_array(policy);
+        }
 
         if (delta < maxErr * errCoeff) {
             break;
@@ -101,7 +108,7 @@ vector<GridState> GridValueIteration::generate_states(int (*goals)[2], int (*pit
         // m_pitfalls.push_back(st);
         pitfalls_str += "(" + to_string(pitfalls[p][0]) + "," + to_string(pitfalls[p][1]) + ")";
     }
-    cout << goals_str << endl << pitfalls_str << endl;
+    m_printLog ? cout << "Goals: " << goals_str << endl << "Pitfalss: " << pitfalls_str << endl : cout;
 
     // generate all grid-states.
     vector<GridState> states;
@@ -199,6 +206,6 @@ int main() {
         {3, 0}, {1, 1}, {2, 3}, {2, 4}
     };
     float action_prob = 0.8;
-    GridValueIteration maze = GridValueIteration(rows, cols, action_prob, goals, pitfalls);
+    GridValueIteration maze = GridValueIteration(rows, cols, action_prob, goals, pitfalls, true);
     maze.run_value_iteration(0.00001, 100);
 }

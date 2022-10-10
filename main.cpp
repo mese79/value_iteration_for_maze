@@ -24,7 +24,8 @@ int main() {
         {3, 0}, {1, 1}, {2, 3}, {2, 4}
     };
     float action_prob = 0.8;
-    GridValueIteration maze = GridValueIteration(rows, cols, action_prob, goals, pitfalls);
+    bool printLog = true;
+    GridValueIteration maze = GridValueIteration(rows, cols, action_prob, goals, pitfalls, printLog);
     maze.run_value_iteration(0.0001, 100);
 
 

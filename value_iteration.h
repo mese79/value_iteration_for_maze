@@ -14,7 +14,6 @@ const string ACT_UP = "Up";
 const string ACT_DOWN = "Down";
 const string ACT_LEFT = "Left";
 const string ACT_RIGHT = "Right";
-// enum class ActionEnum {up = 1, down, left, right};
 
 enum class StateType {normal = 1, goal, pitfall, obstacle};
 
@@ -49,7 +48,7 @@ class GridValueIteration {
         // Action m_actions[4] = {};
         map<string, Action> m_actions;          // all possible actions
         GridState m_agentOrigin;                // agent's starting state
-        GridState m_currState;
+        bool m_printLog;
 
         vector<GridState> generate_states(int (*goals)[2], int (*pitfalls)[2], size_t numGoals, size_t numPitfalls);
         
@@ -68,7 +67,8 @@ class GridValueIteration {
         template <size_t gRows, size_t pRows>
         GridValueIteration(
             int gridH, int gridW, float actionProb,
-            int (&goals)[gRows][2], int (&pitfalls)[pRows][2]
+            int (&goals)[gRows][2], int (&pitfalls)[pRows][2],
+            bool printLog = false
         ) {
             //! NOTE: This implementation is ROW-BASED, so each state's address is like: (y, x) .
             m_gridH = gridH;
@@ -86,6 +86,7 @@ class GridValueIteration {
             m_actions[ACT_RIGHT] = {.name = "Right", .deltaY = 0, .deltaX = 1};
             m_actions[ACT_LEFT] = {.name = "Left", .deltaY = 0, .deltaX = -1};
 
+            m_printLog = printLog;
             gamma = 0.9;
             // generate all states
             m_allStates = generate_states(goals, pitfalls, gRows, pRows);
