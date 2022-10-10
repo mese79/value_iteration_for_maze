@@ -4,6 +4,7 @@
 #include <iostream>
 #include <array>
 #include <vector>
+#include <map>
 #include <string>
 
 using namespace std;
@@ -18,8 +19,8 @@ const string ACT_RIGHT = "Right";
 enum class StateType {normal = 1, goal, pitfall, obstacle};
 
 struct GridState {
-    int x;
     int y;
+    int x;
     StateType type = StateType::normal;
 };
 
@@ -27,8 +28,6 @@ struct Action {
     string name;
     int deltaY;
     int deltaX;
-    Action(){}
-    Action(string name, int deltaRow, int deltaCol) {}
 };
 
 struct Reward {
@@ -39,34 +38,6 @@ struct Reward {
 };
 
 class GridValueIteration {
-    public:
-        float gamma;
-        // constructor with template should be implemented in thev header file.
-        template <size_t gRows, size_t pRows>
-        GridValueIteration(
-            int gridH, int gridW, float actionProb,
-            int (&goals)[gRows][2], int (&pitfalls)[pRows][2]
-        ) {
-            m_gridH = gridH;
-            m_gridW = gridW;
-            m_actionProb = actionProb;
-            m_actionNoiseProb = (1 - actionProb) / 2;
-            m_agentOrigin = {0, 0};  // default start state
-
-            // initialize all actions (row first)
-            m_actions[0] = Action("Up", 1, 0);
-            m_actions[1] = Action("Down", -1, 0);
-            m_actions[2] = Action("Right", 0, 1);
-            m_actions[3] = Action("Left", 0, -1);
-
-            gamma = 0.9;
-            m_allStates = generate_states(goals, pitfalls, gRows, pRows);
-        };
-
-        void run_value_iteration(float max_err, int max_iterations);
-        void setAgentOrigin(GridState state);
-        void setAgentOrigin(int x, int y);
-
     private:
         int m_gridW;
         int m_gridH;
@@ -74,18 +45,56 @@ class GridValueIteration {
         // vector<GridState> m_goals;
         // vector<GridState> m_pitfalls;
         Reward m_reward;
-        float m_actionProb;
-        float m_actionNoiseProb;
-        GridState m_agentOrigin;
-        Action m_actions[4] = {};
+        float m_actionProbs[3];                 // actions' probabilities: intentended + two noisy ones
+        // Action m_actions[4] = {};
+        map<string, Action> m_actions;          // all possible actions
+        GridState m_agentOrigin;                // agent's starting state
         GridState m_currState;
 
-        vector<GridState> generate_states(int (*goals)[2], int (*pitfalls)[2], size_t gRows, size_t pRows);
+        vector<GridState> generate_states(int (*goals)[2], int (*pitfalls)[2], size_t numGoals, size_t numPitfalls);
+        
         vector<vector<float>> initialize_utilities();
 
-        template <size_t rows, size_t cols>
-        float calc_expected_utility(GridState state, Action action, float (&currUtilities)[rows][cols]);
-        GridState apply_action(GridState state, Action action);
+        float calc_expected_utility(GridState &state, Action &action, vector<vector<float>> &currUtilities);
+
+        GridState apply_action(GridState &state, Action &action);
+
+        bool is_inside_maze(GridState &state);
+
+    public:
+        float gamma;
+        
+        // constructor with template should be implemented in the header file.
+        template <size_t gRows, size_t pRows>
+        GridValueIteration(
+            int gridH, int gridW, float actionProb,
+            int (&goals)[gRows][2], int (&pitfalls)[pRows][2]
+        ) {
+            //! NOTE: This implementation is ROW-BASED, so each state's address is like: (y, x) .
+            m_gridH = gridH;
+            m_gridW = gridW;
+            // default start state
+            m_agentOrigin = {0, 0};
+            // actions' probabilities: intentended + two noisy ones
+            m_actionProbs[0] = actionProb;
+            m_actionProbs[1] = (1 - actionProb) / 2;
+            m_actionProbs[2] = m_actionProbs[1];
+
+            // initialize all actions (delta: row, col)
+            m_actions[ACT_UP] = {.name = "Up", .deltaY = 1, .deltaX = 0};
+            m_actions[ACT_DOWN] = {.name = "Down", .deltaY = -1, .deltaX = 0};
+            m_actions[ACT_RIGHT] = {.name = "Right", .deltaY = 0, .deltaX = 1};
+            m_actions[ACT_LEFT] = {.name = "Left", .deltaY = 0, .deltaX = -1};
+
+            gamma = 0.9;
+            // generate all states
+            m_allStates = generate_states(goals, pitfalls, gRows, pRows);
+        };
+
+        void run_value_iteration(float maxErr, int maxIterations);
+        void setAgentOrigin(GridState state);
+        void setAgentOrigin(int x, int y);
 };
+
 
 #endif

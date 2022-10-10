@@ -16,14 +16,16 @@ using namespace std;
  */
 
 int main() {
-    int rows = 6;
-    int cols = 4;
+    int rows = 4;
+    int cols = 6;
+    //! NOTE: This implementation is ROW-BASED, so each state's address is like: (y, x) .
     int goals[1][2] = { {2, 2} };
     int pitfalls[4][2] = {
-        {0, 3}, {1, 1}, {3, 2}, {4, 2}
+        {3, 0}, {1, 1}, {2, 3}, {2, 4}
     };
     float action_prob = 0.8;
     GridValueIteration maze = GridValueIteration(rows, cols, action_prob, goals, pitfalls);
+    maze.run_value_iteration(0.0001, 100);
 
 
     vector<string> actions = {
