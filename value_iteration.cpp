@@ -225,16 +225,16 @@ void GridValueIteration::replace_symbol_with_action(vector<vector<string>> &poli
 
 
 // test the class
-int main() {
-    //! NOTE: This implementation is ROW-BASED, so each state's address is like: (y, x) .
-    cout << "value iteration main" << endl;
-    int rows = 4;
-    int cols = 6;
-    int goals[1][2] = { {2, 2} };
-    int pitfalls[4][2] = {
-        {3, 0}, {1, 1}, {2, 3}, {2, 4}
-    };
-    float action_prob = 0.8;
-    GridValueIteration maze = GridValueIteration(rows, cols, action_prob, goals, pitfalls, true);
-    maze.run_value_iteration(0.00001, 200);
-}
+// int main() {
+//     //! NOTE: This implementation is ROW-BASED, so each state's address is like: (y, x) .
+//     cout << "value iteration main" << endl;
+//     int rows = 4;
+//     int cols = 6;
+//     int goals[1][2] = { {2, 2} };
+//     int pitfalls[4][2] = {
+//         {3, 0}, {1, 1}, {2, 3}, {2, 4}
+//     };
+//     float action_prob = 0.8;
+//     GridValueIteration maze = GridValueIteration(rows, cols, action_prob, goals, pitfalls, true);
+//     maze.run_value_iteration(0.00001, 200);
+// }
