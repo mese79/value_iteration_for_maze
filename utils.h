@@ -1,3 +1,6 @@
+#ifndef UTILS_H
+#define UTILS_H
+
 #include <iostream>
 #include <string>
 #include<iomanip>
@@ -6,7 +9,7 @@ using namespace std;
 
 
 template <typename T>
-void print_vector2d(vector<vector<T>> &data2d, bool flipY=true) {
+inline void print_vector2d(vector<vector<T>> &data2d, bool flipY=true) {
     string output;
     ostringstream ssRow;
     int minPad = 2;
@@ -38,3 +41,23 @@ void print_vector2d(vector<vector<T>> &data2d, bool flipY=true) {
     output = string(output.find("\n"), '-') + "\n" + output;
     cout << endl << output;
 };
+
+
+inline vector<string> policy_to_string(vector<vector<string>> &policy) {
+    vector<string> actions;
+
+    for (auto row = policy.begin(); row != policy.end(); ++row) {
+        for (string &entity: *row) {
+            if (!entity.empty())
+                actions.push_back(entity);
+            else { // goals or pitfalls: fill it with some action
+                actions.push_back("Up");
+            }
+        }
+    }
+
+    return actions;
+};
+
+
+#endif

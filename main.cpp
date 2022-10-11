@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "value_iteration.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -26,18 +27,10 @@ int main() {
     float action_prob = 0.8;
     bool printLog = true;
     GridValueIteration maze = GridValueIteration(rows, cols, action_prob, goals, pitfalls, printLog);
-    maze.run_value_iteration(0.0001, 100);
+    vector<vector<string>> policy = maze.run_value_iteration(0.00001, 1000);
 
-
-    vector<string> actions = {
-        "up", "down", "left", "right",
-        "up", "down", "left", "right",
-        "up", "down", "left", "right",
-        "up", "down", "left", "right",
-        "up", "down", "left", "right",
-        "up", "down", "left", "right"
-    };
-
+    vector<string> actions;
+    actions = policy_to_string(policy);
 
 
     // DO NOT CHANGE THE FOLLOWING CODE
