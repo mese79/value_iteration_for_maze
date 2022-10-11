@@ -26,9 +26,21 @@ int main() {
     };
     float action_prob = 0.8;
     bool printLog = true;
-    GridValueIteration maze = GridValueIteration(rows, cols, action_prob, goals, pitfalls, printLog);
-    vector<vector<string>> policy = maze.run_value_iteration(0.00001, 1000);
 
+    // set the rewards/penalties
+    // default is: 1 for goals, and -1 for pitfalls
+    Reward rewards = {
+        .goal = 1,
+        .pitfall = -1,
+        .obstacle = -0,     // hitting wall/obstacle penalty
+        .move = -0          // penalty for each move
+    };
+
+    GridValueIteration maze = GridValueIteration(rows, cols, action_prob, goals, pitfalls, printLog);
+    maze.set_reward(rewards);
+    // run the algorothm
+    vector<vector<string>> policy = maze.run_value_iteration(0.00001, 1000);
+    // generate actions output 
     vector<string> actions;
     actions = policy_to_string(policy);
 
