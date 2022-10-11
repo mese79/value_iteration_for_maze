@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <string>
+#include <chrono>
 
 #include "value_iteration.h"
 #include "utils.h"
@@ -10,7 +11,7 @@
 using namespace std;
 
 
-void GridValueIteration::run_value_iteration(float maxErr = 0.00001, int maxIterations = 1000) {
+vector<vector<string>> GridValueIteration::run_value_iteration(float maxErr = 0.00001, int maxIterations = 1000) {
     // Performs value iteration algorithm on this maze and returns state utilities and policy.
 
     // 2d vector for current utilities(2d of size m_gridH, m_gridW)
@@ -19,12 +20,14 @@ void GridValueIteration::run_value_iteration(float maxErr = 0.00001, int maxIter
     vector<vector<float>> updatingUtilities = initialize_utilities();
     // policy: 2d vector of actions
     vector<vector<string>> policy(m_gridH, vector<string>(m_gridW));
+    set_policy_fixed_symbols(policy);
 
     float delta = 0;    // for max difference of the current and updating utilities 
     float errCoeff = (1 - gamma) / gamma;
     int curr_it = 1;
 
     m_printLog ? cout << "\nbeginning Value Iteration:\n" : cout;
+    auto t1 = chrono::steady_clock::now();
     
     while (curr_it < maxIterations + 1) {
         m_printLog ? cout << "\n\n  itertion #" << curr_it << ":\n" : cout;
@@ -48,12 +51,9 @@ void GridValueIteration::run_value_iteration(float maxErr = 0.00001, int maxIter
                 }
             }
 
-            // cout << state.y << "," << state.x << endl;
             updatingUtilities[state.y][state.x] = maxR;
-            policy[state.y][state.x] = maxAct.name;
+            policy[state.y][state.x] = this->actionSymbol[maxAct.name];
 
-            // float utilDiff = abs(currUtilities[state.y][state.x] - updatingUtilities[state.y][state.x]);
-            // cout << "delta: " << delta << " , maxDiff: " << utilDiff << endl;
             delta = std::max(
                 delta,
                 abs(currUtilities[state.y][state.x] - updatingUtilities[state.y][state.x])
@@ -64,8 +64,8 @@ void GridValueIteration::run_value_iteration(float maxErr = 0.00001, int maxIter
         currUtilities = updatingUtilities;
 
         if (m_printLog) {
-            print_2d_array(currUtilities);
-            print_2d_array(policy);
+            print_vector2d<float>(currUtilities);
+            print_vector2d<string>(policy);
         }
 
         if (delta < maxErr * errCoeff) {
@@ -74,15 +74,18 @@ void GridValueIteration::run_value_iteration(float maxErr = 0.00001, int maxIter
         curr_it++;
     }
 
+    auto t2 = chrono::steady_clock::now();
+    cout << "\nElapsed time in milliseconds: "
+        << chrono::duration_cast<chrono::milliseconds>(t2 - t1).count()
+        << " ms\n\n";
 
+    replace_symbol_with_action(policy);
 
+    return policy;
 };
 
-void GridValueIteration::setAgentOrigin(GridState state) {
-    m_agentOrigin = state;
-};
-void GridValueIteration::setAgentOrigin(int x, int y) {
-    m_agentOrigin = {x, y};
+void GridValueIteration::set_reward(Reward &reward) {
+    this->m_reward = reward;
 };
 
 //
@@ -160,11 +163,11 @@ float GridValueIteration::calc_expected_utility(GridState &state, Action &action
     actions[0] = action;        // the intended action
     // other two unintended actions
     if (action.name == ACT_UP or action.name == ACT_DOWN) {
-        actions[1] = this->m_actions[ACT_LEFT];
-        actions[2] = this->m_actions[ACT_RIGHT];
+        actions[1] = m_actions[ACT_LEFT];
+        actions[2] = m_actions[ACT_RIGHT];
     } else {
-        actions[1] = this->m_actions[ACT_UP];
-        actions[2] = this->m_actions[ACT_DOWN];
+        actions[1] = m_actions[ACT_UP];
+        actions[2] = m_actions[ACT_DOWN];
     }
     // compute the expected utility
     for (int i = 0; i < 3; ++i) {
@@ -194,6 +197,32 @@ bool GridValueIteration::is_inside_maze(GridState &state) {
     return (state.y >= 0 and state.y < m_gridH) and (state.x >= 0 and state.x < m_gridW);
 };
 
+void GridValueIteration::set_policy_fixed_symbols(vector<vector<string>> &policy) {
+    // set goal and pitfall symbol into policy 2d vecotr.
+    for (GridState &state: m_allStates) {
+        if (state.type == StateType::goal) {
+            policy[state.y][state.x] = ::GOAL_SYM;
+        } 
+        else if (state.type == StateType::pitfall) {
+            policy[state.y][state.x] = ::PITFALL_SYM;
+        }
+    }
+};
+
+void GridValueIteration::replace_symbol_with_action(vector<vector<string>> &policy) {
+    // given policy, replace the symbols with their action's name.
+    map<const string, string> symbols;  // reversed of action: symbol map.
+    for (auto i = this->actionSymbol.begin(); i != this->actionSymbol.end(); ++i)
+        symbols[i->second] = i->first;
+    // replace
+    for (auto &row: policy) {
+        for (string &entity: row) {
+            entity = symbols[entity];
+        }
+    }
+};
+
+
 
 // test the class
 int main() {
@@ -207,5 +236,5 @@ int main() {
     };
     float action_prob = 0.8;
     GridValueIteration maze = GridValueIteration(rows, cols, action_prob, goals, pitfalls, true);
-    maze.run_value_iteration(0.00001, 100);
+    maze.run_value_iteration(0.00001, 200);
 }
