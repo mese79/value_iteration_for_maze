@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "jsoncpp/json/json.h"
 #include "value_iteration.h"
 #include "utils.h"
 
@@ -44,6 +45,25 @@ int main() {
     vector<string> actions;
     actions = policy_to_string(policy);
 
+    // save maze properties to json file(could be used for show.py)
+    Json::Value config;
+    config["rows"] = rows;
+    config["cols"] = cols;
+    int num_goals = sizeof(goals) / sizeof(goals[0]);
+    for (int i = 0; i < num_goals; i++) {
+        config["goals"][to_string(i)]["y"] = goals[i][0];
+        config["goals"][to_string(i)]["x"] = goals[i][1];
+    }
+    int num_pits = sizeof(pitfalls) / sizeof(pitfalls[0]);
+    for (int i = 0; i < num_pits; i++) {
+        config["pitfalls"][to_string(i)]["y"] = pitfalls[i][0];
+        config["pitfalls"][to_string(i)]["x"] = pitfalls[i][1];
+    }
+    // save config to file
+    ofstream config_file;
+    config_file.open("config.json");
+    config_file << config;
+    config_file.close();
 
     // DO NOT CHANGE THE FOLLOWING CODE
 
