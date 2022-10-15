@@ -36,10 +36,10 @@ struct Action {
 };
 
 struct Reward {
-    float goal = 1;
-    float pitfall = -1;
-    float obstacle = 0;
-    float move = 0;
+    double goal = 1;
+    double pitfall = -1;
+    double obstacle = 0;
+    double move = 0;
 };
 
 class GridValueIteration {
@@ -47,35 +47,37 @@ class GridValueIteration {
         int m_gridW;
         int m_gridH;
         vector<GridState> m_allStates;
-        // vector<GridState> m_goals;
-        // vector<GridState> m_pitfalls;
+        vector<GridState> m_goals;
+        vector<GridState> m_pitfalls;
         Reward m_reward;                        // hold different rewards
-        float m_actionProbs[3];                 // actions' probabilities: intentended + two noisy ones
+        double m_actionProbs[3];                 // actions' probabilities: intentended + two noisy ones
         map<string, Action> m_actions;          // all possible actions
         bool m_printLog;                        // log the process output into stdout
 
         vector<GridState> generate_states(int (*goals)[2], int (*pitfalls)[2], size_t numGoals, size_t numPitfalls);
-        
-        vector<vector<float>> initialize_utilities();
 
-        float calc_expected_utility(GridState &state, Action &action, vector<vector<float>> &currUtilities);
+        double calc_expected_utility(GridState &state, Action &action, vector<vector<double>> &currUtilities);
 
         GridState apply_action(GridState &state, Action &action);
 
         bool is_inside_maze(GridState &state);
+
+        bool is_goal(GridState &state);
+
+        bool is_pitfall(GridState &state);
 
         void set_policy_fixed_symbols(vector<vector<string>> &policy);
 
         void replace_symbol_with_action(vector<vector<string>> &policy);
 
     public:
-        float gamma;
+        double gamma;
         map<const string, string> actionSymbol;
         
         // constructor with template should be implemented in the header file.
         template <size_t gRows, size_t pRows>
         GridValueIteration(
-            int gridH, int gridW, float actionProb,
+            int gridH, int gridW, double actionProb,
             int (&goals)[gRows][2], int (&pitfalls)[pRows][2],
             bool printLog = false
         ) {
@@ -105,7 +107,7 @@ class GridValueIteration {
             m_allStates = generate_states(goals, pitfalls, gRows, pRows);
         };
 
-        vector<vector<string>> run_value_iteration(float maxErr, int maxIterations);
+        vector<vector<string>> run_value_iteration(double maxErr, int maxIterations);
         void set_reward(Reward &reward);
 };
 

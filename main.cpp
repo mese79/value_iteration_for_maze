@@ -25,22 +25,23 @@ int main() {
     int pitfalls[4][2] = {
         {3, 0}, {1, 1}, {2, 3}, {2, 4}
     };
-    float action_prob = 0.8;
+    double action_prob = 0.8;
     bool printLog = true;
 
     // set the rewards/penalties
     // default is: 1 for goals, and -1 for pitfalls
     Reward rewards = {
         .goal = 1,
-        .pitfall = -1,
+        .pitfall = -5,
         .obstacle = -0,     // hitting wall/obstacle penalty
         .move = -0          // penalty for each move
     };
 
     GridValueIteration maze = GridValueIteration(rows, cols, action_prob, goals, pitfalls, printLog);
     maze.set_reward(rewards);
+    maze.gamma = 0.9;
     // run the algorothm
-    vector<vector<string>> policy = maze.run_value_iteration(0.00001, 1000);
+    vector<vector<string>> policy = maze.run_value_iteration(0.000001, 1000);
     // generate actions output 
     vector<string> actions;
     actions = policy_to_string(policy);
