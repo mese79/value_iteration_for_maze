@@ -10,12 +10,6 @@
 
 using namespace std;
 
-/*
- * Replace the values inside the vector "actions" with the one of your solution.
- * The index of the vector increases from the bottom left to top right.
- * The value of the vector indicates the action to perform at the corresponding state.
- * You can show on screen your solution running the python script "show.py" in the build folder.
- */
 
 int main() {
     int rows = 4;
@@ -29,12 +23,11 @@ int main() {
     bool printLog = true;
 
     // set the rewards/penalties
-    // default is: 1 for goals, and -1 for pitfalls
     Reward rewards = {
         .goal = 1,
-        .pitfall = -5,
-        .obstacle = -0,     // hitting wall/obstacle penalty
-        .move = -0          // penalty for each move
+        .pitfall = -500,
+        .obstacle = -0.1,     // hitting wall/obstacle penalty
+        .move = -0            // penalty for each move
     };
 
     GridValueIteration maze = GridValueIteration(rows, cols, action_prob, goals, pitfalls, printLog);
@@ -66,8 +59,7 @@ int main() {
     config_file << config;
     config_file.close();
 
-    // DO NOT CHANGE THE FOLLOWING CODE
-
+    // save optimized policy in actions.txt
     std::ofstream output_file("./actions.txt");
     std::ostream_iterator<std::string> output_iterator(output_file, "\n");
     std::copy(actions.begin(), actions.end(), output_iterator);

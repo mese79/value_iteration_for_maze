@@ -50,7 +50,7 @@ class GridValueIteration {
         vector<GridState> m_goals;
         vector<GridState> m_pitfalls;
         Reward m_reward;                        // hold different rewards
-        double m_actionProbs[3];                 // actions' probabilities: intentended + two noisy ones
+        double m_actionProbs[3];                // actions' probabilities: intentended + two noisy ones
         map<string, Action> m_actions;          // all possible actions
         bool m_printLog;                        // log the process output into stdout
 
